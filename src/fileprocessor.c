@@ -6,6 +6,35 @@ typedef union {
     char* str;
 } CharToStrConverter;
 
+
+int sizeArray(char *ptr)
+{
+    int offset = 0; //atlanacak eleman sayısının değeri.
+    int size = 0; //dizinin uzunluğu
+    //ptr dizinin ilk elemanıdır.
+    while (*(ptr + offset) != '\0')
+    {
+        ++size;
+        ++offset;
+    }
+    return size;
+}
+
+char* combineStr(const char* str1, const char* str2){
+    const size_t size1 = strlen(str1);
+    const size_t size2 = strlen(str2);
+
+    char* combinedStr = (char*)malloc(size1 + size2 + 1);//null terminator için +1 eklenir.
+    if(combinedStr == NULL){
+        printf("Bellek ayirmada sikinti yasandi.\n");
+        return NULL;
+    }
+
+    memcpy(combinedStr, str1, size1);//(nereden itibaren kopyalamaya başlanacağı, kopyalanacak str, dizi başlıgıcından itibaren kopyalanacak str'nin kaç byte'ının kopyalanacağı)
+    memcpy(combinedStr + size1, str2, size2 + 1);
+    return combinedStr;
+}
+
 long fgetsize(FILE* file){
     //Dosyanın akışı kullanılarak dosyanın boyutu elde edilebilir.
     fseek(file, 0, SEEK_END);//akış dosyanın başından başlatılır, sonuna kadar devam ettirilir.
@@ -14,28 +43,18 @@ long fgetsize(FILE* file){
     return size;
 }
 
-char fIsDifferent(FILE* file1, FILE* file2){
-    long size1 = fgetsize(file1);
-    long size2 = fgetsize(file2);
+char fIsDifferent(char* path1, char* path2){
+    char* buffer1 = fContentBytes(path1);
+    char* buffer2 = fContentBytes(path2);
 
-    if(size1 != size2) return !0; //boyutları farklı
-
-    unsigned char* buffer1 = (unsigned char*)malloc(size1);
-    unsigned char* buffer2 = (unsigned char*)malloc(size2);
-
-    size_t byteRead1 = fread(buffer1, 1, size1, file1);
-    if(byteRead1 != size1) { printf("Okuma sirasinda hata meydana geldi.\n"); return 0; }
-    size_t byteRead2 = fread(buffer2, 1, size2, file2);
-
-    if(memcmp(buffer1, buffer2, size1) != 0) {
-        free(buffer1);
-        free(buffer2);
-        return !0;
+    if(buffer1 != NULL && buffer2 != NULL){
+        size_t buflen1 = sizeArray(buffer1);
+        size_t buflen2 = sizeArray(buffer2);
+        if(buflen1 != buflen2) return TRUE;
+        if(memcmp(buffer1, buffer2, buflen1) == 0) return TRUE;
+        return FALSE;
     }
-
-    free(buffer1);
-    free(buffer2);
-    return 0;
+    return FALSE;
 }
 
 char* fContentBytes(const char* filePath){
@@ -66,7 +85,7 @@ char* fContentBytes(const char* filePath){
 
 char* fContentChar(const char* fileByteContent, size_t size){
     char* copy = (char*)malloc(size);
-    if(copy == NULL) { printf("Alan tahsis edilemedi.\n"); return 0; }
+    if(copy == NULL) { printf("Alan tahsis edilemedi.\n"); return NULL; }
 
     memcpy(copy, fileByteContent, size);
 

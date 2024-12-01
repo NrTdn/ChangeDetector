@@ -4,9 +4,20 @@
 #include "../include/fileprocessor.h"
 
 #define PATH_BUF 512
-int main() {
-    char programIsRunning = 0;
-    char IsGettingPath = 0;
+#define IMPLEMENTATION_ERROR 1
+int main(int argc, char** argv) {
+
+    if(argc != 3){
+        printf("Yanlis implementasyon, Dogru Kullanim:\n    ./detector dosya1.uzanti dosya2.uzanti\n");
+        return IMPLEMENTATION_ERROR;
+    }
+
+    char* mainPath = "C:\\Users\\HelyakX\\Desktop\\Visual Studio Code\\C\\Change Commiter\\";
+
+    //printf("Birinci arguman: %s\n",argv[1]);
+    //printf("İkinci arguman: %s\n",argv[2]);
+
+    
     char* path1 = (char*)malloc(PATH_BUF);
     if (path1 == NULL) {
         printf("Bellek ayirma hatasi!\n");
@@ -18,35 +29,32 @@ int main() {
         return 1;
     }
 
-    printf("Taranacak klasor veya dosyanin yolunu girin veya dosyayi surukleyiniz:(Dikkat: Yolu girerken cift ters / kullanin)\n");
-    fgets(path1, PATH_BUF, stdin);
-    path1[strcspn(path1, "\n")] = 0;
-    FILE* file;
-    if(file = fopen(path1, "rb")) { programIsRunning = !0; fclose(file);}
+    path1 = argv[1];
+    path2 = argv[2];
 
+    char* combinedPath1 = combineStr(mainPath, path1);
+    char* combinedPath2 = combineStr(mainPath, path2);
+    
+    //char result = fIsDifferent(path1, path2); => Bu şekilde de kullanılabilir.
+    //Bu şekilde kullanılmazsa mainPath değişkeninin içindeki değeri değiştirmeniz gerekir.
+    //Manuel olarak değiştirmek yerine ./detector çağrısında parametre olarak alınabilir.
 
-    while(programIsRunning){
-        printf("Program basladi\n");
-        
-        FILE* file;
-        if(file = fopen(path1, "rb")){
-            char* filestr = fContentBytes(path1);
-            printf("Dosya: %s\n", filestr);
-            fclose(file);
-        }
-
-        printf("Dosyanizi gordunuz. Bir dosya daha ekleyecek misiniz?(Y/N)\n");
-        char* input = (char*)malloc(1);
-        fgets(input, sizeof(input), stdin);
-        if(memcmp(input, "N", 1) != 0){
-            printf("Ekleyeceginiz dosyayi giriniz:\n");
-            fgets(path2, PATH_BUF, stdin);
-        }
-        else break;
-        free(input);
+    char result = fIsDifferent(combinedPath1, combinedPath2);
+    switch (result)
+    {
+    case TRUE:
+        printf("Farkli Dosyalar\n");
+        break;
+    case FALSE:
+        printf("Ayni Dosyalar\n");
+        break;
+    default:
+        break;
     }
+
     free(path1);
     free(path2);
-    printf("Program Sona Erdi\n");
+    free(combinedPath1);
+    free(combinedPath2);
     return 0;
 }
