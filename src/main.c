@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "../include/fileprocessor.h"
 
 #define PATH_BUF 512
