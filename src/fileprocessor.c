@@ -5,7 +5,6 @@ typedef union {
     char* str;
 } CharToStrConverter;
 
-
 int sizeArray(char *ptr)
 {
     int offset = 0; //atlanacak eleman sayısının değeri.
